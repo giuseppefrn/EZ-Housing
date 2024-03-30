@@ -19,7 +19,8 @@ def get_houses_from_pararius(link, driver):
         soup = BeautifulSoup(html)
 
         results = soup.find_all(
-            class_="listing-search-item__link " "listing-search-item__link--depiction" # noqa
+            class_="listing-search-item__link "
+            "listing-search-item__link--depiction"  # noqa
         )
 
         for item in results:
@@ -56,7 +57,7 @@ def get_info_from_pararius(link, driver):
         print("Price error")
 
     results = soup.find(
-        class_="agent-summary__link agent-summary__link--hidden agent-summary__link--call-agent" # noqa
+        class_="agent-summary__link agent-summary__link--hidden agent-summary__link--call-agent"  # noqa
     )
     if results:
         number = results.text
