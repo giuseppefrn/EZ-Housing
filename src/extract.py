@@ -1,18 +1,26 @@
+import argparse
+import os
+
 import pandas as pd
 from selenium import webdriver
 
-import os
-import argparse
-
-from utils.general import *
+from utils.general import (get_city_name_from_pararius,
+                           get_houses_from_pararius, get_info_from_pararius)
 
 if __name__ == "__main__":
     print()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--link', type=str, required=True,
-                        help='Link to start your search. i.e. https://www.pararius.com/apartments/utrecht')
-    parser.add_argument('--output_dir', type=str, default='outputs', help='path to the output folder')
+    parser.add_argument(
+        "--link",
+        type=str,
+        required=True,
+        help="Link to start your search. i.e. "
+        "https://www.pararius.com/apartments/utrecht",
+    )
+    parser.add_argument(
+        "--output_dir", type=str, default="outputs", help="path to the output folder" # noqa
+    )
 
     opt = parser.parse_args()
 
@@ -26,11 +34,11 @@ if __name__ == "__main__":
     df = pd.DataFrame(houses_list, columns=["link"])
 
     # adding city name to df
-    df['city'] = df['link'].apply(get_city_name_from_pararius)
+    df["city"] = df["link"].apply(get_city_name_from_pararius)
 
     # populating the dataframe
     for i, row in df.iterrows():
-        link = row['link']
+        link = row["link"]
         res = get_info_from_pararius(link, driver)
         df.loc[i, res.keys()] = res.values()
 
