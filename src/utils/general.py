@@ -47,14 +47,14 @@ def get_info_from_pararius(link, driver):
         print("Driver error", e)
         return price, number, agent
 
-    results = soup.find(class_="listing-detail-summary__price")
-    if results:
-        price = results.text
-        price = price.split("\n")[-4]
-        price = price.split("€")[-1]
-        price = price.replace(",", "")
-    else:
-        print("Price error")
+    # results = soup.find(class_="listing-detail-summary__price")
+    # if results:
+    #     price = results.text
+    #     price = price.split("\n")[-4]
+    #     price = price.split("€")[-1]
+    #     price = price.replace(",", "")
+    # else:
+    #     print("Price error")
 
     results = soup.find(
         class_="agent-summary__link agent-summary__link--hidden agent-summary__link--call-agent"  # noqa

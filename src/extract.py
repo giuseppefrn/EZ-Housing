@@ -17,14 +17,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--link",
         type=str,
-        required=True,
+        default="https://www.pararius.com/apartments/leiden/700-1500/since-3",
         help="Link to start your search. i.e. "
         "https://www.pararius.com/apartments/utrecht",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="outputs",
+        default="outputs/extracted",
         help="path to the output folder",  # noqa
     )
 
@@ -53,4 +53,4 @@ if __name__ == "__main__":
 
     # writing the dataframe as csv
     os.makedirs(opt.output_dir, exist_ok=True)
-    df.to_csv(os.path.join(opt.output_dir, "houses-info.csv"))
+    df.to_csv(os.path.join(opt.output_dir, "houses-info.csv"), index=False)
