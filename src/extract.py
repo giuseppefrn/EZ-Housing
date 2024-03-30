@@ -4,8 +4,11 @@ import os
 import pandas as pd
 from selenium import webdriver
 
-from utils.general import (get_city_name_from_pararius,
-                           get_houses_from_pararius, get_info_from_pararius)
+from utils.general import (
+    get_city_name_from_pararius,
+    get_houses_from_pararius,
+    get_info_from_pararius,
+)
 
 if __name__ == "__main__":
     print()
@@ -19,7 +22,10 @@ if __name__ == "__main__":
         "https://www.pararius.com/apartments/utrecht",
     )
     parser.add_argument(
-        "--output_dir", type=str, default="outputs", help="path to the output folder" # noqa
+        "--output_dir",
+        type=str,
+        default="outputs",
+        help="path to the output folder",  # noqa
     )
 
     opt = parser.parse_args()
@@ -42,6 +48,9 @@ if __name__ == "__main__":
         res = get_info_from_pararius(link, driver)
         df.loc[i, res.keys()] = res.values()
 
-        # writing the dataframe as csv
+    # closing the driver
+    driver.close()
+
+    # writing the dataframe as csv
     os.makedirs(opt.output_dir, exist_ok=True)
     df.to_csv(os.path.join(opt.output_dir, "houses-info.csv"))
