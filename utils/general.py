@@ -1,12 +1,14 @@
 from bs4 import BeautifulSoup
 import time
 
+
 # get the city name from the link
 # for pararius it is the -3 element splitted by /
 def get_city_name_from_pararius(link):
     return link.split('/')[-3]
 
-#get the list of house from pararius link
+
+# get the list of house from pararius link
 def get_houses_from_pararius(link, driver):
     try:
         houses_list = []
@@ -24,10 +26,11 @@ def get_houses_from_pararius(link, driver):
         return houses_list
     except:
         return 0
-    
-#Core function for pararius return the information from the link
+
+
+# Core function for pararius return the information from the link
 def get_info_from_pararius(link, driver):
-    price, number, agent = -1,-1,None
+    price, number, agent = -1, -1, None
 
     print('Starting', link)
     try:
@@ -66,7 +69,7 @@ def get_info_from_pararius(link, driver):
     keys = soup.find_all(class_="listing-features__term")
 
     res = {}
-    for key, value in zip(keys,values):
+    for key, value in zip(keys, values):
         res[key.text] = value.text
 
     res['price'] = price
