@@ -17,7 +17,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--link",
         type=str,
-        default="https://www.pararius.com/apartments/leiden/700-1500/since-3",
+        default="https://www.pararius.com/apartments/leiden/700-1500/since-1",
         help="Link to start your search. i.e. "
         "https://www.pararius.com/apartments/utrecht",
     )

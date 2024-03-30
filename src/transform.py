@@ -31,6 +31,21 @@ if __name__ == "__main__":
     # Load the extracted data
     houses_info_df = pd.read_csv("outputs/extracted/houses-info.csv")
 
+    mandatory_columns = {
+        "Available": {"type": "date"},
+        "Deposit": {"type": "float"},
+        "Living area": {"type": "float"},
+        "Offered since": {"type": "date"},
+        "price": {"type": "float"},
+        "Rental price": {"type": "float"},
+        "Service costs": {"type": "float"},
+    }
+
+    # Add missing columns
+    for col in mandatory_columns:
+        if col not in houses_info_df.columns:
+            houses_info_df[col] = pd.NA
+
     # Apply conversions
     houses_info_df["Offered since"] = houses_info_df["Offered since"].apply(
         convert_to_date
