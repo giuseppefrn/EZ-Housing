@@ -10,7 +10,6 @@ if __name__ == "__main__":
     print()
 
     parser = argparse.ArgumentParser()
-    # TODO add others illuminants
     parser.add_argument('--link', type=str, required=True,
                         help='Link to start your search. i.e. https://www.pararius.com/apartments/utrecht')
     parser.add_argument('--output_dir', type=str, default='outputs', help='path to the output folder')
