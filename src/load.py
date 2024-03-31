@@ -18,6 +18,9 @@ if __name__ == "__main__":
     db = client["housing"]
     collection = db["houses"]
     houses_info_df["load_date"] = datetime.datetime.now()
+    houses_info_df["expires_at"] = datetime.datetime.now() + datetime.timedelta(  # noqa
+        days=30
+    )
 
     documents = houses_info_df.to_dict(orient="records")
 
