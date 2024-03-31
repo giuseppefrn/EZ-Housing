@@ -11,8 +11,10 @@ from utils.general import (
 )
 
 if __name__ == "__main__":
-    print()
+    # get the root folder of the project
+    root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+    # parsing the arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--link",
@@ -24,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="outputs/extracted",
+        default=os.path.join(root_folder, "outputs/extracted"),
         help="path to the output folder",  # noqa
     )
 
