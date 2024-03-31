@@ -1,22 +1,46 @@
-# load the data into mongodb
+import datetime
+import os
 
 import pandas as pd
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 
 if __name__ == "__main__":
-    # Load the transformed data
+    root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     houses_info_df = pd.read_csv(
-        "outputs/transformed/houses-info-transformed.csv"
-    )  # noqa
+        os.path.join(
+            root_folder, "outputs/transformed/houses-info-transformed.csv"
+        )  # noqa
+    )
 
-    # Connect to the database
     client = MongoClient(
         "mongodb://root:example@localhost:27017/"
     )  # todo change password using env variables or secrets
     db = client["housing"]
     collection = db["houses"]
+    houses_info_df["load_date"] = datetime.datetime.now()
 
-    # Insert the data into the database
-    collection.insert_many(houses_info_df.to_dict(orient="records"))
+    documents = houses_info_df.to_dict(orient="records")
 
-    print("Data loaded into MongoDB successfully.")
+    inserted_ids = []
+
+    for doc in documents:
+        # insert document into collection
+        try:
+            result = collection.insert_one(doc)
+            print(f"Inserted document with id: {result.inserted_id}")
+            inserted_ids.append(result.inserted_id)
+
+        except errors.DuplicateKeyError as dke:
+            # Log or handle the details of the duplicate error as needed
+            print("Document is a duplicate and not inserted.")
+
+            # Example: Printing the error details
+            print(f"Error details: {dke.details}")
+
+        except errors.BulkWriteError as bwe:
+            # Log or handle the details of the bulk write error as needed
+            print("Bulk write error occurred.")
+            # Example: Printing the error details
+            print(f"Error details: {bwe.details}")
+
+    # todo send email for the inserted ids
