@@ -20,7 +20,7 @@ RUN wget -O geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/d
     && mv geckodriver /usr/local/bin/
 
 # Copy the rest of the application into the container
-COPY . .
+COPY ../.. .
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir poetry
