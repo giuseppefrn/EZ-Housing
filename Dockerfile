@@ -1,41 +1,28 @@
-# Use an official Python runtime as a parent image
+# Use the official Python image as the base image
 FROM python:3.12-slim
+
+# Set environment variables to make Firefox run in headless mode
+ENV MOZ_HEADLESS=1
+
+# Update and install system packages
+RUN apt-get update && apt-get install -y \
+    firefox-esr \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Install Firefox and wget
-RUN apt-get update \
-    && apt-get install -y firefox-esr wget \
-    && rm -rf /var/lib/apt/lists/*
-
-# Download geckodriver and install it
-RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz \
-    && tar -xvzf geckodriver-v0.30.0-linux64.tar.gz \
+# Download and install geckodriver for ARM64
+RUN wget -O geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux-aarch64.tar.gz \
+    && tar -xvzf geckodriver.tar.gz \
     && chmod +x geckodriver \
     && mv geckodriver /usr/local/bin/
 
-# Set the PATH environment variable to include the directory of geckodriver
-ENV PATH="/usr/local/bin:${PATH}"
-
-# Copy your project's 'pyproject.toml' and possibly 'poetry.lock' files
-COPY pyproject.toml poetry.lock* ./
-
-# Install Poetry
-RUN pip install --no-cache-dir poetry
-
-# Disable virtual env creation by Poetry, install dependencies
-RUN poetry config virtualenvs.create false \
-  && poetry install --no-interaction --no-ansi
-
-# Copy the rest of your project's files into the container
+# Copy the rest of the application into the container
 COPY . .
 
-# Make port 80 available to the world outside this container
-EXPOSE 8080
-
-# Define environment variable
-ENV NAME World
-
-# Run your_script.py when the container launches
-CMD ["python", "./src/extract.py", "--link", "https://www.pararius.com/apartments/leiden/700-1500/since-3"]
+# Install the Python dependencies
+RUN pip install --no-cache-dir poetry
+RUN poetry config virtualenvs.create false \
+  && poetry install --no-interaction --no-ansi
