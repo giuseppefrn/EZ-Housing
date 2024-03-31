@@ -3,6 +3,8 @@ import os
 
 import pandas as pd
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 
 from utils.general import (
     get_city_name_from_pararius,
@@ -32,8 +34,15 @@ if __name__ == "__main__":
 
     opt = parser.parse_args()
 
-    # opening the driver
-    driver = webdriver.Firefox()
+    # Setting up Firefox options to run headless
+    options = Options()
+    options.headless = True
+
+    # Explicitly specify the path to geckodriver
+    service = Service(executable_path="/usr/local/bin/geckodriver")
+
+    # Opening the driver with the configured options
+    driver = webdriver.Firefox(service=service, options=options)
 
     # getting the list of houses (links)
     houses_list = get_houses_from_pararius(opt.link, driver)
