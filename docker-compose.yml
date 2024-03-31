@@ -1,6 +1,9 @@
 version: '3.8'
 services:
   mongodb:
+    build:
+        context: ./mongodb
+        dockerfile: Dockerfile
     image: mongo:latest
     container_name: mongodb_container
     environment:
