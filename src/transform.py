@@ -28,8 +28,13 @@ def extract_numeric(value_str):
 
 
 if __name__ == "__main__":
+    # get the root folder of the project
+    root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     # Load the extracted data
-    houses_info_df = pd.read_csv("outputs/extracted/houses-info.csv")
+    houses_info_df = pd.read_csv(
+        os.path.join(root_folder, "outputs/extracted/houses-info.csv")
+    )
 
     mandatory_columns = {
         "Available": {"type": "date"},
@@ -74,8 +79,8 @@ if __name__ == "__main__":
     # Save the transformed data
 
     # Create a folder for the transformed data
-    output_dir = "outputs/transformed"
+    output_dir = os.path.join(root_folder, "outputs/transformed")
     os.makedirs(output_dir, exist_ok=True)
     houses_info_df.to_csv(
-        "outputs/transformed/houses-info-transformed.csv", index=False
+        os.path.join(output_dir, "houses-info-transformed.csv"), index=False
     )  # noqa
