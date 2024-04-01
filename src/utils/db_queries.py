@@ -93,6 +93,4 @@ if __name__ == "__main__":
     print(get_houses())
 
     # empty the collection
-    empty_collection()
-
-    print(get_houses())
+    # empty_collection()
