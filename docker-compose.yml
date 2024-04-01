@@ -50,6 +50,8 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./src:/opt/airflow/src
+    env_file:
+      - .env
     ports:
       - "8080:8080"
     command: webserver
@@ -76,6 +78,8 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./src:/opt/airflow/src
+    env_file:
+      - .env
     command: scheduler
     networks:
       - airflow-net

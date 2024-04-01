@@ -1,3 +1,5 @@
+import os
+
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 
@@ -7,9 +9,10 @@ def get_collection():
     Get the collection object from the MongoDB database.
     :return: collection object
     """
-    client = MongoClient(
-        "mongodb://root:example@mongodb:27017"
-    )  # todo change password using env variables or secrets
+    user = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
+    password = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
+
+    client = MongoClient(f"mongodb://{user}:{password}@mongodb:27017")
     db = client.housing
     collection = db.houses
     return collection
@@ -65,3 +68,33 @@ def get_houses_by_ids(inserted_ids):
     for house in collection.find({"_id": {"$in": inserted_ids}}):
         houses.append(house)
     return houses
+
+
+def insert_house(house):
+    """
+    Insert a house into the database.
+    :param house: House object.
+    :return: Inserted id.
+    """
+    collection = get_collection()
+    result = collection.insert_one(house)
+    return str(result.inserted_id)
+
+
+if __name__ == "__main__":
+    print(get_houses())
+    #
+    # # empty the collection
+    # collection = get_collection()
+    # collection.delete_many({})
+    # print(get_houses())
+    #
+    # # insert a house
+    # insert_house({
+    #     "Address": "Test address",
+    #     "Rental price": 1000,
+    #     "link": "https://www.pararius.com/1",
+    #     "city": "Leiden",
+    #     "load_date": "2021-01-01",
+    #     "expires_at": "2021-02-01"
+    # })

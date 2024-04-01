@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 
 # get the city name from the link
-# for pararius it is the -3 element splitted by /
+# for pararius it is the -3 element split by /
 def get_city_name_from_pararius(link):
     return link.split("/")[-3]
 

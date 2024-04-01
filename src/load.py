@@ -2,7 +2,9 @@ import datetime
 import os
 
 import pandas as pd
-from pymongo import MongoClient, errors
+from pymongo import errors
+
+from .utils.db_queries import get_collection
 
 
 def load_data():
@@ -18,11 +20,7 @@ def load_data():
         )  # noqa
     )
 
-    client = MongoClient(
-        "mongodb://root:example@mongodb:27017/"
-    )  # todo change password using env variables or secrets
-    db = client["housing"]
-    collection = db["houses"]
+    collection = get_collection()
     houses_info_df["load_date"] = datetime.datetime.now()
     houses_info_df["expires_at"] = datetime.datetime.now() + datetime.timedelta(  # noqa
         days=30
@@ -52,7 +50,7 @@ def load_data():
             # Example: Printing the error details
             print(f"Error details: {bwe.details}")
 
-    return inserted_ids
+    return [str(obj_id) for obj_id in inserted_ids]
 
 
 if __name__ == "__main__":
