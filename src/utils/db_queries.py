@@ -81,20 +81,18 @@ def insert_house(house):
     return str(result.inserted_id)
 
 
+def empty_collection():
+    """
+    Empty the collection.
+    """
+    collection = get_collection()
+    collection.delete_many({})
+
+
 if __name__ == "__main__":
     print(get_houses())
-    #
-    # # empty the collection
-    # collection = get_collection()
-    # collection.delete_many({})
-    # print(get_houses())
-    #
-    # # insert a house
-    # insert_house({
-    #     "Address": "Test address",
-    #     "Rental price": 1000,
-    #     "link": "https://www.pararius.com/1",
-    #     "city": "Leiden",
-    #     "load_date": "2021-01-01",
-    #     "expires_at": "2021-02-01"
-    # })
+
+    # empty the collection
+    empty_collection()
+
+    print(get_houses())

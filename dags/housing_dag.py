@@ -34,7 +34,9 @@ dag = DAG(
 
 extract_task = PythonOperator(
     task_id="extract",
-    python_callable=extract_data,
+    python_callable=extract_data(
+        link="https://www.pararius.com/apartments/leiden/since-1"
+    ),
     dag=dag,
 )
 
