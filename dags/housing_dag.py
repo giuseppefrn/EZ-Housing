@@ -36,7 +36,7 @@ dag = DAG(
     "housing_dag",
     default_args=default_args,
     description="EZ housing DAG",
-    schedule_interval="0 8,11,14,17,19 * * 1-6",
+    schedule_interval="4 8,11,14,17,19 * * 1-6",
     catchup=False,
 )
 
