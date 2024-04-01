@@ -13,7 +13,7 @@ from .utils.general import (
 
 
 def extract_data(
-    link: str = "https://www.pararius.com/apartments/leiden/700-1500/since-1",
+    link: str = "https://www.pararius.com/apartments/leiden/700-1500/since-2",
     output_dir: str = "outputs/extracted",
 ):
     """
