@@ -3,8 +3,12 @@ import os
 import pandas as pd
 
 
-# Function to convert date strings to standardized date format
 def convert_to_date(date_str):
+    """
+    Convert a date string to a standardized date format.
+    :param date_str:
+    :return:
+    """
     if (
         pd.isnull(date_str)
         or "In consultation" in date_str
@@ -19,6 +23,11 @@ def convert_to_date(date_str):
 
 # Function to extract numeric values from strings
 def extract_numeric(value_str):
+    """
+    Extract numeric values from a string.
+    :param value_str:
+    :return:
+    """
     if pd.isnull(value_str):
         return pd.NA
     try:
