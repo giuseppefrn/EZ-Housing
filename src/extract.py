@@ -1,4 +1,3 @@
-import argparse
 import os
 
 import pandas as pd
@@ -6,33 +5,22 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 
-from utils.general import (
+from .utils.general import (
     get_city_name_from_pararius,
     get_houses_from_pararius,
     get_info_from_pararius,
 )
 
-if __name__ == "__main__":
+
+def extract_data(
+    link="https://www.pararius.com/apartments/leiden/700-1500/since-3",
+    output_dir="outputs/extracted",
+):
     # get the root folder of the project
     root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    # parsing the arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--link",
-        type=str,
-        default="https://www.pararius.com/apartments/leiden/700-1500/since-1",
-        help="Link to start your search. i.e. "
-        "https://www.pararius.com/apartments/utrecht",
-    )
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        default=os.path.join(root_folder, "outputs/extracted"),
-        help="path to the output folder",  # noqa
-    )
-
-    opt = parser.parse_args()
+    # Setting output_dir
+    abs_output_dir = os.path.join(root_folder, "outputs/extracted")
 
     # Setting up Firefox options to run headless
     options = Options()
@@ -45,7 +33,12 @@ if __name__ == "__main__":
     driver = webdriver.Firefox(service=service, options=options)
 
     # getting the list of houses (links)
-    houses_list = get_houses_from_pararius(opt.link, driver)
+    houses_list = get_houses_from_pararius(link, driver)
+
+    print(houses_list)
+
+    if not houses_list:
+        raise ValueError("No houses found. The list is empty.")
 
     # inizialize the dataframe
     df = pd.DataFrame(houses_list, columns=["link"])
@@ -63,5 +56,9 @@ if __name__ == "__main__":
     driver.close()
 
     # writing the dataframe as csv
-    os.makedirs(opt.output_dir, exist_ok=True)
-    df.to_csv(os.path.join(opt.output_dir, "houses-info.csv"), index=False)
+    os.makedirs(abs_output_dir, exist_ok=True)
+    df.to_csv(os.path.join(abs_output_dir, "houses-info.csv"), index=False)
+
+
+if __name__ == "__main__":
+    extract_data()

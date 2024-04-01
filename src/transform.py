@@ -27,7 +27,7 @@ def extract_numeric(value_str):
         return pd.NA
 
 
-if __name__ == "__main__":
+def transform_data():
     # get the root folder of the project
     root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -84,3 +84,7 @@ if __name__ == "__main__":
     houses_info_df.to_csv(
         os.path.join(output_dir, "houses-info-transformed.csv"), index=False
     )  # noqa
+
+
+if __name__ == "__main__":
+    transform_data()

@@ -1,4 +1,13 @@
 version: '3'
+
+volumes:
+  mongodb_data:
+  postgres-db-volume:
+
+networks:
+  airflow-net:
+    driver: bridge
+
 services:
   redis:
     image: redis:latest
@@ -21,7 +30,10 @@ services:
       - airflow-net
 
   airflow-webserver:
-    image: apache/airflow:2.1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: apache/airflow:2.9.0b2
     environment:
       - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -37,6 +49,7 @@ services:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
+      - ./src:/opt/airflow/src
     ports:
       - "8080:8080"
     command: webserver
@@ -44,7 +57,10 @@ services:
       - airflow-net
 
   airflow-scheduler:
-    image: apache/airflow:2.1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: apache/airflow:2.9.0b2
     environment:
       - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -59,15 +75,16 @@ services:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
+      - ./src:/opt/airflow/src
     command: scheduler
     networks:
       - airflow-net
 
   airflow-worker:
     build:
-        context: ./images/airflow-worker
-        dockerfile: Dockerfile
-    image: apache/airflow:2.1.0
+      context: .
+      dockerfile: Dockerfile
+    image: apache/airflow:2.9.0b2-python3.12
     environment:
       - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -82,15 +99,16 @@ services:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
-    command: worker
+      - ./src:/opt/airflow/src
+    command: celery worker
     networks:
       - airflow-net
 
   mongodb:
     build:
-        context: images/mongodb
+        context: ./images/mongodb
         dockerfile: Dockerfile
-    image: mongo:latest
+    image: mongo
     container_name: mongodb_container
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
@@ -98,12 +116,6 @@ services:
     volumes:
       - mongodb_data:/data/db
     ports:
-      - 27017:27017
-
-volumes:
-  mongodb_data:
-  postgres-db-volume:
-
-networks:
-  airflow-net:
-    driver: bridge
+      - "27017:27017"
+    networks:
+      - airflow-net

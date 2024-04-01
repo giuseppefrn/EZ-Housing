@@ -4,7 +4,8 @@ import os
 import pandas as pd
 from pymongo import MongoClient, errors
 
-if __name__ == "__main__":
+
+def load_data():
     root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     houses_info_df = pd.read_csv(
         os.path.join(
@@ -13,7 +14,7 @@ if __name__ == "__main__":
     )
 
     client = MongoClient(
-        "mongodb://root:example@localhost:27017/"
+        "mongodb://root:example@mongodb:27017/"
     )  # todo change password using env variables or secrets
     db = client["housing"]
     collection = db["houses"]
@@ -47,3 +48,7 @@ if __name__ == "__main__":
             print(f"Error details: {bwe.details}")
 
     # todo send email for the inserted ids
+
+
+if __name__ == "__main__":
+    load_data()
