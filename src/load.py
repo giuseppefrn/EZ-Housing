@@ -52,7 +52,7 @@ def load_data():
             # Example: Printing the error details
             print(f"Error details: {bwe.details}")
 
-    # todo send email for the inserted ids
+    return inserted_ids
 
 
 if __name__ == "__main__":
