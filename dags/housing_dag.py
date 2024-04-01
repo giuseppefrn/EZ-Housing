@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from airflow import DAG
-from airflow.operators.email_operator import EmailOperator
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.email import EmailOperator
+from airflow.operators.python import PythonOperator
 
 sys.path.append(str(Path(__file__).parents[1]))
 
@@ -18,21 +18,18 @@ default_args = {
     "owner": "airflow",
     "depends_on_past": False,
     "start_date": datetime(2024, 3, 31),
-    "schedule_interval": "0 */3 * * *",
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
-    "catchup": False,
-    # send email when the DAG is completed
-    "email_on_success": True,
 }
 
 dag = DAG(
     "housing_dag",
     default_args=default_args,
     description="EZ housing DAG",
-    schedule_interval=timedelta(days=1),
+    schedule_interval="0 8,11,14,17,19 * * 1-6",
+    catchup=False,
 )
 
 extract_task = PythonOperator(
@@ -67,3 +64,9 @@ send_email = EmailOperator(
     html_content="{{ ti.xcom_pull(task_ids='prepare_email_content') }}",
     dag=dag,
 )
+
+# Define task dependencies in a multiline format
+extract_task >> transform_task
+transform_task >> load_task
+load_task >> prepare_email_content
+prepare_email_content >> send_email
