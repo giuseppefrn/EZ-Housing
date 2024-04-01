@@ -15,11 +15,14 @@ default_args = {
     "owner": "airflow",
     "depends_on_past": False,
     "start_date": datetime(2024, 3, 31),
+    "schedule_interval": "0 */3 * * *",
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
     "catchup": False,
+    # send email when the DAG is completed
+    "email_on_success": True,
 }
 
 dag = DAG(

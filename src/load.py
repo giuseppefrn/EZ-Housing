@@ -6,6 +6,11 @@ from pymongo import MongoClient, errors
 
 
 def load_data():
+    """
+    Load the data into the MongoDB database.
+    :return:
+    """
+
     root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     houses_info_df = pd.read_csv(
         os.path.join(

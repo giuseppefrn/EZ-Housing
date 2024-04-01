@@ -13,14 +13,21 @@ from .utils.general import (
 
 
 def extract_data(
-    link="https://www.pararius.com/apartments/leiden/700-1500/since-3",
-    output_dir="outputs/extracted",
+    link: str = "https://www.pararius.com/apartments/leiden/700-1500/since-1",
+    output_dir: str = "outputs/extracted",
 ):
+    """
+    Extracts data from the Pararius website and saves it as a csv file.
+    :param link:
+    :param output_dir:
+    :return:
+    """
+
     # get the root folder of the project
     root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # Setting output_dir
-    abs_output_dir = os.path.join(root_folder, "outputs/extracted")
+    abs_output_dir = os.path.join(root_folder, output_dir)
 
     # Setting up Firefox options to run headless
     options = Options()

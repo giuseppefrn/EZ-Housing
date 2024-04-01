@@ -28,6 +28,11 @@ def extract_numeric(value_str):
 
 
 def transform_data():
+    """
+    Transform the extracted data.
+    :return:
+    """
+
     # get the root folder of the project
     root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
