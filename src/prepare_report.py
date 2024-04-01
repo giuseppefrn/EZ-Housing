@@ -17,7 +17,7 @@ def filter_houses(houses, price=1500):
     return filtered_houses
 
 
-def create_report(**kwargs):
+def prepare_report(**kwargs):
     """
     Send an email with the link of the inserted_ids.
     The links are retrieved from the MongoDB database.
@@ -25,6 +25,10 @@ def create_report(**kwargs):
     inserted_ids = kwargs.get("ti").xcom_pull(task_ids="load")
     houses = get_houses_by_ids(inserted_ids)
     filtered_houses = filter_houses(houses)
+
+    if not filtered_houses:
+        logging.info("No houses found with the given price.")
+        return None
 
     # Start with an HTML header
     email_content = "<h1>List of new houses:</h1>"
