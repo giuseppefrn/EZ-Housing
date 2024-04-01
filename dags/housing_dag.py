@@ -67,12 +67,3 @@ send_email = EmailOperator(
     html_content="{{ ti.xcom_pull(task_ids='prepare_email_content') }}",
     dag=dag,
 )
-
-
-(
-    extract_task
-    >> transform_task
-    >> load_task
-    >> prepare_email_content
-    >> send_email  # noqa
-)
