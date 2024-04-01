@@ -100,6 +100,8 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./src:/opt/airflow/src
+    env_file:
+      - .env
     command: celery worker
     networks:
       - airflow-net
@@ -110,11 +112,10 @@ services:
         dockerfile: Dockerfile
     image: mongo
     container_name: mongodb_container
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
     volumes:
       - mongodb_data:/data/db
+    env_file:
+      - .env
     ports:
       - "27017:27017"
     networks:
