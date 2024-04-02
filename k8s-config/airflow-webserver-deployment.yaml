@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: airflow-webserver
+  template:
+    metadata:
+      labels:
+        component: airflow-webserver
+    spec:
+      containers:
+      - name: airflow-webserver
+        image: furnar000/airflow
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: airflow-config
+        - secretRef:
+            name: airflow-secrets
+        env:
+          - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+            value: "postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
+          - name: AIRFLOW__CELERY__RESULT_BACKEND
+            value: "db+postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
+        volumeMounts:
+        - name: dags
+          mountPath: /opt/airflow/dags
+        - name: logs
+          mountPath: /opt/airflow/logs
+        - name: plugins
+          mountPath: /opt/airflow/plugins
+        - name: src
+          mountPath: /opt/airflow/src
+      volumes:
+      - name: dags
+        hostPath:
+          path: ./dags
+      - name: logs
+        hostPath:
+          path: ./logs
+      - name: plugins
+        hostPath:
+          path: ./plugins
+      - name: src
+        hostPath:
+          path: ./src

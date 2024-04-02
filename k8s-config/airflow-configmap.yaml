@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-config
+data:
+  AIRFLOW__CORE__EXECUTOR: "CeleryExecutor"
+  AIRFLOW__CELERY__BROKER_URL: "redis://redis:6379/0"
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
