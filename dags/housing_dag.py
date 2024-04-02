@@ -22,6 +22,13 @@ def is_content_filled(**kwargs):
     return html_content is not None and html_content.strip() != ""
 
 
+def is_data_extracted(**kwargs):
+    # Pull the data from the previous task
+    data = kwargs["ti"].xcom_pull(task_ids="extract")
+    # Check if the data is not None and not empty
+    return data is not None and data.strip() != ""
+
+
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
@@ -43,6 +50,14 @@ dag = DAG(
 extract_task = PythonOperator(
     task_id="extract",
     python_callable=extract_data,
+    dag=dag,
+    provide_context=True,  # noqa
+)
+
+check_extracted_task = ShortCircuitOperator(
+    task_id="check_data_is_extracted",
+    python_callable=is_data_extracted,
+    provide_context=True,
     dag=dag,
 )
 
@@ -81,7 +96,8 @@ send_email = EmailOperator(
 )
 
 # Define task dependencies in a multiline format
-extract_task >> transform_task
+extract_task >> check_extracted_task
+check_extracted_task >> transform_task
 transform_task >> load_task
 load_task >> prepare_email_content
 prepare_email_content >> check_content_task

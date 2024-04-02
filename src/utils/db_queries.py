@@ -70,6 +70,20 @@ def get_houses_by_ids(inserted_ids):
     return houses
 
 
+def check_links_not_in_db(links):
+    """
+    Check if the given links are not in the database.
+    :param links: List of links.
+    :return: List of links not in the database.
+    """
+    collection = get_collection()
+    houses = []
+    for link in links:
+        if collection.find_one({"link": link}) is None:
+            houses.append(link)
+    return houses
+
+
 def insert_house(house):
     """
     Insert a house into the database.

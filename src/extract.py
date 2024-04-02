@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 
+from .utils.db_queries import check_links_not_in_db
 from .utils.general import (
     get_city_name_from_pararius,
     get_houses_from_pararius,
@@ -42,10 +43,15 @@ def extract_data(
     # getting the list of houses (links)
     houses_list = get_houses_from_pararius(link, driver)
 
+    # check if the houses link in houses_list are already in the db
+    # if yes, remove them from the list
+    houses_list = check_links_not_in_db(houses_list)
+
     print(houses_list)
 
     if not houses_list:
-        raise ValueError("No houses found. The list is empty.")
+        print("No new houses found.")
+        return
 
     # inizialize the dataframe
     df = pd.DataFrame(houses_list, columns=["link"])
