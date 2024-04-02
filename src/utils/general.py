@@ -55,6 +55,13 @@ def get_info_from_pararius(link, driver):
     #     price = price.replace(",", "")
     # else:
     #     print("Price error")
+    # get title of the house
+
+    results = soup.find(class_="listing-detail-summary__title")
+    if results:
+        title = results.text
+    else:
+        title = link.split("/")[-1]
 
     results = soup.find(
         class_="agent-summary__link agent-summary__link--hidden agent-summary__link--call-agent"  # noqa
@@ -81,5 +88,6 @@ def get_info_from_pararius(link, driver):
     res["price"] = price
     res["number"] = number
     res["agent"] = agent
+    res["title"] = title
 
     return res
