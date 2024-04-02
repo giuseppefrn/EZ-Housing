@@ -12,7 +12,10 @@ def filter_houses(houses, price=1500):
     """
     filtered_houses = []
     for house in houses:
-        if house.get("Rental price", 0) < price:
+        if (
+            house.get("Rental price", 0) < price
+            and house.get("Living area", 100) >= 45  # noqa
+        ):
             filtered_houses.append(house)
     return filtered_houses
 
