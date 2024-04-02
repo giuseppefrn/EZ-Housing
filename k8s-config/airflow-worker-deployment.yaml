@@ -20,6 +20,11 @@ spec:
             name: airflow-config
         - secretRef:
             name: airflow-secrets
+        env:
+          - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+            value: "postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
+          - name: AIRFLOW__CELERY__RESULT_BACKEND
+            value: "db+postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
         volumeMounts:
         - name: dags
           mountPath: /opt/airflow/dags

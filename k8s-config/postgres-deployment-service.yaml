@@ -20,12 +20,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: airflow-secrets
-              key: postgres-user
+              key: POSTGRES_USER
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: airflow-secrets
-              key: postgres-password
+              key: POSTGRES_PASSWORD
         - name: POSTGRES_DB
           value: "airflow"
         ports:
