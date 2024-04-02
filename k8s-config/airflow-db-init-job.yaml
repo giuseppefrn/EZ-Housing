@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-db-init
+spec:
+  template:
+    spec:
+      containers:
+      - name: airflow-db-init
+        image: furnar000/airflow
+        command: ["/bin/bash", "-c"]
+        args:
+        - >
+          airflow db init &&
+          airflow users create \
+            --username "$(AIRFLOW_USERNAME)" \
+            --password "$(AIRFLOW_PASSWORD)" \
+            --firstname "$(USER_FIRST_NAME)" \
+            --lastname "$(USER_LAST_NAME)" \
+            --role Admin \
+            --email "$(USER_EMAIL)"
+        env:
+        - name: AIRFLOW_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: AIRFLOW_USERNAME
+        - name: AIRFLOW_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: AIRFLOW_PASSWORD
+        - name: AIRFLOW__CORE__FERNET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: AIRFLOW__CORE__FERNET_KEY
+        - name: USER_FIRST_NAME
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: user_first_name
+        - name: USER_LAST_NAME
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: user_last_name
+        - name: USER_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: user_email
+        envFrom:
+        - configMapRef:
+            name: airflow-config
+        - secretRef:
+            name: airflow-secrets
+      restartPolicy: Never
+  backoffLimit: 2

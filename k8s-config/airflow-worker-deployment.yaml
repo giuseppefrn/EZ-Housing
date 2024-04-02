@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: airflow-worker
 spec:
-  replicas: 1  # Start with 1 worker, but you can scale this up based on your workload
+  replicas: 1
   selector:
     matchLabels:
       component: airflow-worker

@@ -23,10 +23,12 @@ spec:
         - secretRef:
             name: airflow-secrets
         env:
-          - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+          - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
             value: "postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
           - name: AIRFLOW__CELERY__RESULT_BACKEND
             value: "db+postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
+        command: [ "airflow" ]
+        args: [ "webserver" ]
         volumeMounts:
         - name: dags
           mountPath: /opt/airflow/dags
@@ -38,14 +40,14 @@ spec:
           mountPath: /opt/airflow/src
       volumes:
       - name: dags
-        hostPath:
-          path: ./dags
+        persistentVolumeClaim:
+          claimName: airflow-dags-pvc
       - name: logs
-        hostPath:
-          path: ./logs
+        persistentVolumeClaim:
+          claimName: airflow-logs-pvc
       - name: plugins
-        hostPath:
-          path: ./plugins
+        persistentVolumeClaim:
+          claimName: airflow-plugins-pvc
       - name: src
-        hostPath:
-          path: ./src
+        persistentVolumeClaim:
+          claimName: airflow-src-pvc

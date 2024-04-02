@@ -29,3 +29,7 @@ WORKDIR /opt/airflow
 RUN pip install --no-cache-dir poetry
 RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi
+
+COPY dags /opt/airflow/dags
+COPY plugins /opt/airflow/plugins
+COPY src /opt/airflow/src
