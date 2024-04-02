@@ -34,18 +34,15 @@ def prepare_report(**kwargs):
     email_content = "<h1>List of new houses:</h1>"
 
     for house in filtered_houses:
-        city = house.get("city", "unknown")
-        location = house.get("Location", "unknown")
+        title = house.get("title")
         price = house.get("Rental price", "No Price")
         link = house.get("link", "#")
 
         # Use HTML formatting for the link
-        email_content += (
-            f"<p>House in {city}"
-            f" at {location}, "
-            f"Price: {price}, "
-            f"Link: <a href='{link}'>{link}</a> </p>"
-        )
+        email_content += f"<p><strong>{title}</strong></p>"
+        email_content += f"<p><a href='{link}'>{link}</a></p>"
+        email_content += f"<p>Price: {price}</p>"
+        email_content += "<br>"
 
     logging.info(email_content)
     return email_content
