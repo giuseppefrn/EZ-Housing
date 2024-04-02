@@ -12,35 +12,57 @@ spec:
       labels:
         component: airflow-scheduler
     spec:
+      initContainers:
+        - name: copy-airflow-content
+          image: furnar000/airflow
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              mkdir -p /opt/airflow/dags /opt/airflow/plugins /opt/airflow/src &&
+              cp -r /original/dags/. /opt/airflow/dags/ &&
+              cp -r /original/plugins/. /opt/airflow/plugins/ &&
+              cp -r /original/src/. /opt/airflow/src/
+          volumeMounts:
+            - name: dags
+              mountPath: /opt/airflow/dags
+            - name: plugins
+              mountPath: /opt/airflow/plugins
+            - name: src
+              mountPath: /opt/airflow/src
       containers:
       - name: airflow-scheduler
         image: furnar000/airflow
         envFrom:
-        - configMapRef:
-            name: airflow-config
-        - secretRef:
-            name: airflow-secrets
+          - configMapRef:
+              name: airflow-config
+          - secretRef:
+              name: airflow-secrets
         env:
           - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
             value: "postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
           - name: AIRFLOW__CELERY__RESULT_BACKEND
             value: "db+postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
         volumeMounts:
-        - name: dags
-          mountPath: /opt/airflow/dags
-        - name: logs
-          mountPath: /opt/airflow/logs
-        - name: plugins
-          mountPath: /opt/airflow/plugins
+          - name: dags
+            mountPath: /opt/airflow/dags
+          - name: logs
+            mountPath: /opt/airflow/logs
+          - name: plugins
+            mountPath: /opt/airflow/plugins
+          - name: src
+            mountPath: /opt/airflow/src
         command: ["airflow"]
         args: ["scheduler"]
       volumes:
-      - name: dags
-        persistentVolumeClaim:
-          claimName: airflow-dags-pvc
-      - name: logs
-        persistentVolumeClaim:
-          claimName: airflow-logs-pvc
-      - name: plugins
-        persistentVolumeClaim:
-          claimName: airflow-plugins-pvc
+        - name: dags
+          persistentVolumeClaim:
+            claimName: airflow-dags-pvc
+        - name: logs
+          persistentVolumeClaim:
+            claimName: airflow-logs-pvc
+        - name: plugins
+          persistentVolumeClaim:
+            claimName: airflow-plugins-pvc
+        - name: src  # Ensure this volume is correctly declared, assuming you have a PVC for it
+          persistentVolumeClaim:
+            claimName: airflow-src-pvc
