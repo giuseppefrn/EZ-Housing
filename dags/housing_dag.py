@@ -15,18 +15,28 @@ from src.prepare_report import prepare_report  # noqa
 from src.transform import transform_data  # noqa
 
 
-def is_content_filled(**kwargs):
-    # Pull the HTML content from the previous task
-    html_content = kwargs["ti"].xcom_pull(task_ids="prepare_email_content")
-    # Check if the content is not None and not empty
-    return html_content is not None and html_content.strip() != ""
+def check_task_output_filled(**kwargs):
+    """
+    General-purpose function to check if the
+    output from specified tasks is not None and not empty.
+    It iterates over the list of task IDs
+    provided and checks each corresponding output.
 
+    Args:
+    **kwargs: containing 'task_ids', a list of task IDs to check,
+              and 'ti', the task instance.
 
-def is_data_extracted(**kwargs):
-    # Pull the data from the previous task
-    data = kwargs["ti"].xcom_pull(task_ids="extract")
-    # Check if the data is not None and not empty
-    return data is not None and data.strip() != ""
+    Returns:
+    bool: True if all specified tasks have outputs that are not None and not empty, False otherwise. # noqa
+    """
+    task_ids = kwargs.get("task_ids", [])
+    ti = kwargs["ti"]
+
+    for task_id in task_ids:
+        task_output = ti.xcom_pull(task_ids=task_id)
+        if task_output is None or task_output.strip() == "":
+            return False
+    return True
 
 
 default_args = {
@@ -54,13 +64,6 @@ extract_task = PythonOperator(
     provide_context=True,  # noqa
 )
 
-check_extracted_task = ShortCircuitOperator(
-    task_id="check_data_is_extracted",
-    python_callable=is_data_extracted,
-    provide_context=True,
-    dag=dag,
-)
-
 transform_task = PythonOperator(
     task_id="transform",
     python_callable=transform_data,
@@ -80,13 +83,6 @@ prepare_email_content = PythonOperator(
     provide_context=True,
 )
 
-check_content_task = ShortCircuitOperator(
-    task_id="check_html_content_is_filled",
-    python_callable=is_content_filled,
-    provide_context=True,
-    dag=dag,
-)
-
 send_email = EmailOperator(
     task_id="send_report_email",
     to=os.getenv("EMAIL"),
@@ -95,10 +91,29 @@ send_email = EmailOperator(
     dag=dag,
 )
 
+check_extracted_task = ShortCircuitOperator(
+    task_id="check_extracted_task",
+    python_callable=check_task_output_filled,
+    op_kwargs={"task_ids": ["extract"]},  # Specify the task_ids to check here
+    provide_context=True,
+    dag=dag,
+)
+
+check_email_filled_task = ShortCircuitOperator(
+    task_id="check_content_filled",
+    python_callable=check_task_output_filled,
+    op_kwargs={
+        "task_ids": ["prepare_email_content"]
+    },  # Specify the task_ids to check here
+    provide_context=True,
+    dag=dag,
+)
+
+
 # Define task dependencies in a multiline format
 extract_task >> check_extracted_task
 check_extracted_task >> transform_task
 transform_task >> load_task
 load_task >> prepare_email_content
-prepare_email_content >> check_content_task
-check_content_task >> send_email
+prepare_email_content >> check_email_filled_task
+check_email_filled_task >> send_email
