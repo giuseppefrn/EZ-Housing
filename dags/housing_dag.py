@@ -76,7 +76,7 @@ send_email = EmailOperator(
     task_id="send_report_email",
     to=os.getenv("EMAIL"),
     subject="Housing Report",
-    html_content="{{ ti.xcom_pull(task_ids='check_html_content_is_filled') }}",
+    html_content="{{ ti.xcom_pull(task_ids='prepare_email_content') }}",
     dag=dag,
 )
 
