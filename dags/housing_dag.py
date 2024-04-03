@@ -6,13 +6,18 @@ from pathlib import Path
 from airflow import DAG
 from airflow.operators.email import EmailOperator
 from airflow.operators.python import PythonOperator, ShortCircuitOperator
+from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator  # noqa
 
 sys.path.append(str(Path(__file__).parents[1]))
 
 from src.extract import extract_data  # noqa
 from src.load import load_data  # noqa
-from src.prepare_report import prepare_report  # noqa
+from src.prepare_report import (  # noqa
+    prepare_email_report,
+    prepare_slack_report,
+    prepare_telegram_report,
+)
 from src.transform import transform_data  # noqa
 
 
@@ -81,7 +86,21 @@ load_task = PythonOperator(
 
 prepare_email_content = PythonOperator(
     task_id="prepare_email_content",
-    python_callable=prepare_report,
+    python_callable=prepare_email_report,
+    dag=dag,
+    provide_context=True,
+)
+
+prepare_slack_report = PythonOperator(
+    task_id="prepare_slack_report",
+    python_callable=prepare_slack_report,
+    dag=dag,
+    provide_context=True,
+)
+
+prepare_telegram_report = PythonOperator(
+    task_id="prepare_telegram_report",
+    python_callable=prepare_telegram_report,
     dag=dag,
     provide_context=True,
 )
@@ -97,8 +116,21 @@ send_email = EmailOperator(
 send_slack = SlackWebhookOperator(
     task_id="send_slack",
     slack_webhook_conn_id="slack_connection",
-    message="{{ ti.xcom_pull(task_ids='prepare_email_content') }}",
+    message="{{ ti.xcom_pull(task_ids='prepare_slack_report') }}",
     channel="#house-report",
+    dag=dag,
+)
+
+send_telegram_message = SimpleHttpOperator(
+    task_id="send_telegram_message",
+    http_conn_id="telegram_bot",
+    endpoint=f'/bot{os.getenv("TELEGRAM_TOKEN")}/sendMessage',
+    method="GET",
+    data={
+        "chat_id": f'{os.getenv("CHAT_ID")}',
+        "text": "{{ ti.xcom_pull(task_ids='prepare_telegram_report') }}",
+    },
+    headers={"Content-Type": "application/json"},
     dag=dag,
 )
 
@@ -110,11 +142,11 @@ check_extracted_task = ShortCircuitOperator(
     dag=dag,
 )
 
-check_email_filled_task = ShortCircuitOperator(
+check_report_filled_task = ShortCircuitOperator(
     task_id="check_content_filled",
     python_callable=check_task_output_filled,
     op_kwargs={
-        "task_ids": ["prepare_email_content"]
+        "task_ids": ["prepare_telegram_report"]
     },  # Specify the task_ids to check here
     provide_context=True,
     dag=dag,
@@ -125,6 +157,6 @@ check_email_filled_task = ShortCircuitOperator(
 extract_task >> check_extracted_task
 check_extracted_task >> transform_task
 transform_task >> load_task
-load_task >> prepare_email_content
-prepare_email_content >> check_email_filled_task
-check_email_filled_task >> [send_email, send_slack]
+load_task >> [prepare_telegram_report]
+prepare_telegram_report >> check_report_filled_task
+check_report_filled_task >> [send_telegram_message]

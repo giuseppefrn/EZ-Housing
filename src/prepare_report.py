@@ -20,7 +20,67 @@ def filter_houses(houses, price=1500):
     return filtered_houses
 
 
-def prepare_report(**kwargs):
+def prepare_slack_report(**kwargs):
+    """
+    Send slack report with the link of the inserted_ids.
+    The links are retrieved from the MongoDB database.
+    """
+    inserted_ids = kwargs.get("ti").xcom_pull(task_ids="load")
+    houses = get_houses_by_ids(inserted_ids)
+    filtered_houses = filter_houses(houses)
+
+    if not filtered_houses:
+        logging.info("No houses found with the given price.")
+        return None
+
+    # Start with an HTML header
+    slack_content = "*List of new houses:*\n"
+
+    for house in filtered_houses:
+        title = house.get("title")
+        price = house.get("Rental price", "No Price")
+        link = house.get("link", "#")
+
+        # Use Slack Mrkdwn formatting
+        slack_content += f"*{title}*\n"
+        slack_content += f"<{link}|View House>\n"  # Slack format for links
+        slack_content += f"Price: {price}\n\n"  # Adding a new line for spacing
+
+    logging.info(slack_content)
+    return slack_content
+
+
+def prepare_telegram_report(**kwargs):
+    """
+    Prepare a Telegram report with the links of the inserted_ids.
+    The links are retrieved from the MongoDB database.
+    """
+    inserted_ids = kwargs.get("ti").xcom_pull(task_ids="load")
+    houses = get_houses_by_ids(inserted_ids)
+    filtered_houses = filter_houses(houses)
+
+    if not filtered_houses:
+        logging.info("No houses found with the given criteria.")
+        return None
+
+    # Start with a Markdown header
+    telegram_content = "*List of new houses:*\n\n"
+
+    for house in filtered_houses:
+        title = house.get("title")
+        price = house.get("Rental price", "No Price")
+        link = house.get("link", "#")
+
+        # Use Telegram Markdown formatting
+        telegram_content += f"*{title}*\n"
+        telegram_content += f"[View House]({link})\n"
+        telegram_content += f"Price: {price}\n\n"
+
+    logging.info(telegram_content)
+    return telegram_content
+
+
+def prepare_email_report(**kwargs):
     """
     Send an email with the link of the inserted_ids.
     The links are retrieved from the MongoDB database.
