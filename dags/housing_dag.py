@@ -34,7 +34,9 @@ def check_task_output_filled(**kwargs):
 
     for task_id in task_ids:
         task_output = ti.xcom_pull(task_ids=task_id)
-        if task_output is None or task_output.strip() == "":
+        if not task_output or (
+            isinstance(task_output, str) and task_output.strip() == ""
+        ):
             return False
     return True
 
