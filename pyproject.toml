@@ -11,6 +11,7 @@ pandas = "^2.2.1"
 selenium = "^4.19.0"
 bs4 = "^0.0.2"
 pymongo = "^4.6.3"
+apache-airflow-providers-slack = "^8.6.1"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -6,6 +6,7 @@ from pathlib import Path
 from airflow import DAG
 from airflow.operators.email import EmailOperator
 from airflow.operators.python import PythonOperator, ShortCircuitOperator
+from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator  # noqa
 
 sys.path.append(str(Path(__file__).parents[1]))
 
@@ -93,6 +94,14 @@ send_email = EmailOperator(
     dag=dag,
 )
 
+send_slack = SlackWebhookOperator(
+    task_id="send_slack",
+    slack_webhook_conn_id="slack_connection",
+    message="{{ ti.xcom_pull(task_ids='prepare_email_content') }}",
+    channel="#house-report",
+    dag=dag,
+)
+
 check_extracted_task = ShortCircuitOperator(
     task_id="check_extracted_task",
     python_callable=check_task_output_filled,
@@ -118,4 +127,4 @@ check_extracted_task >> transform_task
 transform_task >> load_task
 load_task >> prepare_email_content
 prepare_email_content >> check_email_filled_task
-check_email_filled_task >> send_email
+check_email_filled_task >> [send_email, send_slack]
