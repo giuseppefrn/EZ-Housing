@@ -51,7 +51,7 @@ def extract_data(
 
     if not houses_list:
         print("No new houses found.")
-        return
+        return False
 
     # inizialize the dataframe
     df = pd.DataFrame(houses_list, columns=["link"])
@@ -71,6 +71,8 @@ def extract_data(
     # writing the dataframe as csv
     os.makedirs(abs_output_dir, exist_ok=True)
     df.to_csv(os.path.join(abs_output_dir, "houses-info.csv"), index=False)
+
+    return True
 
 
 if __name__ == "__main__":

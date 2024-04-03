@@ -3,3 +3,4 @@ outputs/*
 .env
 /TODO
 logs
+/k8s-config/airflow-secrets.yaml
