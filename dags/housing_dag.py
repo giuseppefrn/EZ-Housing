@@ -131,6 +131,7 @@ send_telegram_message = SimpleHttpOperator(
     data={
         "chat_id": f'{os.getenv("CHAT_ID")}',
         "text": "{{ ti.xcom_pull(task_ids='prepare_telegram_report') }}",
+        "parse_mode": "MarkdownV2",
     },
     headers={"Content-Type": "application/json"},
     dag=dag,

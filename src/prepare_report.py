@@ -64,17 +64,19 @@ def prepare_telegram_report(**kwargs):
         return None
 
     # Start with a Markdown header
-    telegram_content = "*List of new houses:*\n\n"
+    telegram_content = "🏘 *List of new houses:* 🏘\n\n"
 
     for house in filtered_houses:
         title = house.get("title")
         price = house.get("Rental price", "No Price")
         link = house.get("link", "#")
+        living_area = house.get("Living area", "Unknown")
 
         # Use Telegram Markdown formatting
-        telegram_content += f"*{title}*\n"
+        telegram_content += f"🏡 *{title}*\n"
         telegram_content += f"[View House]({link})\n"
-        telegram_content += f"Price: {price}\n\n"
+        telegram_content += f"_Price: {price}_\n"
+        telegram_content += f"_Living area: {living_area}_\n\n"
 
     logging.info(telegram_content)
     return telegram_content
