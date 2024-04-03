@@ -4,10 +4,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from airflow import DAG
-from airflow.operators.email import EmailOperator
+
+# from airflow.operators.email import EmailOperator
 from airflow.operators.python import PythonOperator, ShortCircuitOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
-from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator  # noqa
+
+# from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator  # noqa
 
 sys.path.append(str(Path(__file__).parents[1]))
 
@@ -84,19 +86,19 @@ load_task = PythonOperator(
     dag=dag,
 )
 
-prepare_email_content = PythonOperator(
-    task_id="prepare_email_content",
-    python_callable=prepare_email_report,
-    dag=dag,
-    provide_context=True,
-)
-
-prepare_slack_report = PythonOperator(
-    task_id="prepare_slack_report",
-    python_callable=prepare_slack_report,
-    dag=dag,
-    provide_context=True,
-)
+# prepare_email_content = PythonOperator(
+#     task_id="prepare_email_content",
+#     python_callable=prepare_email_report,
+#     dag=dag,
+#     provide_context=True,
+# )
+#
+# prepare_slack_report = PythonOperator(
+#     task_id="prepare_slack_report",
+#     python_callable=prepare_slack_report,
+#     dag=dag,
+#     provide_context=True,
+# )
 
 prepare_telegram_report = PythonOperator(
     task_id="prepare_telegram_report",
@@ -105,21 +107,21 @@ prepare_telegram_report = PythonOperator(
     provide_context=True,
 )
 
-send_email = EmailOperator(
-    task_id="send_report_email",
-    to=os.getenv("EMAIL"),
-    subject="Housing Report",
-    html_content="{{ ti.xcom_pull(task_ids='prepare_email_content') }}",
-    dag=dag,
-)
-
-send_slack = SlackWebhookOperator(
-    task_id="send_slack",
-    slack_webhook_conn_id="slack_connection",
-    message="{{ ti.xcom_pull(task_ids='prepare_slack_report') }}",
-    channel="#house-report",
-    dag=dag,
-)
+# send_email = EmailOperator(
+#     task_id="send_report_email",
+#     to=os.getenv("EMAIL"),
+#     subject="Housing Report",
+#     html_content="{{ ti.xcom_pull(task_ids='prepare_email_content') }}",
+#     dag=dag,
+# )
+#
+# send_slack = SlackWebhookOperator(
+#     task_id="send_slack",
+#     slack_webhook_conn_id="slack_connection",
+#     message="{{ ti.xcom_pull(task_ids='prepare_slack_report') }}",
+#     channel="#house-report",
+#     dag=dag,
+# )
 
 send_telegram_message = SimpleHttpOperator(
     task_id="send_telegram_message",
