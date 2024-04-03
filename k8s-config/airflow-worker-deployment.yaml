@@ -42,6 +42,11 @@ spec:
               value: "postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
             - name: AIRFLOW__CELERY__RESULT_BACKEND
               value: "db+postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres/airflow"
+            - name: EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: airflow-secrets
+                  key: user_email
           volumeMounts:
             - name: dags
               mountPath: /opt/airflow/dags
