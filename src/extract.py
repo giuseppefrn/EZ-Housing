@@ -14,7 +14,7 @@ from .utils.general import (
 
 
 def extract_data(
-    link: str = "https://www.pararius.com/apartments/leiden/600-1800/radius-25/since-1",  # noqa
+    link: str = "https://www.pararius.com/apartments/leiden/0-3000/radius-25/since-1",  # noqa
     output_dir: str = "outputs/extracted",
 ):
     """

@@ -3,7 +3,7 @@ import logging
 from .utils.db_queries import get_houses_by_ids
 
 
-def filter_houses(houses, price=1500):
+def filter_houses(houses, price=1700):
     """
     Filter the houses with a price less than the given price.
     :param houses: List of houses.
