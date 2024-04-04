@@ -75,11 +75,10 @@ def prepare_telegram_report(**kwargs):
         # Use Telegram Markdown formatting
         telegram_content += f"🏡 *{title}*\n"
         telegram_content += f"[View House]({link})\n"
-        telegram_content += f"_Price: {price}_\n"
-        telegram_content += f"_Living area: {living_area}_\n\n"
-
-    # escape the dot in the markdown using two backslashes
-    telegram_content = telegram_content.replace(".", "\\.")
+        telegram_content += f"_Price: {price}_\n".replace(".", "\\.")
+        telegram_content += f"_Living area: {living_area}_\n\n".replace(
+            ".", "\\."
+        )  # noqa
 
     logging.info(telegram_content)
     return telegram_content
