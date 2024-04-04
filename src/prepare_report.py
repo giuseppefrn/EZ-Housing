@@ -78,6 +78,9 @@ def prepare_telegram_report(**kwargs):
         telegram_content += f"_Price: {price}_\n"
         telegram_content += f"_Living area: {living_area}_\n\n"
 
+    # escape the dot in the markdown using two backslashes
+    telegram_content = telegram_content.replace(".", "\\.")
+
     logging.info(telegram_content)
     return telegram_content
 
